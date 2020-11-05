@@ -34,7 +34,7 @@ fn main() {
 
     if let Some(sub) = matches.subcommand_matches("run") {
         let path = sub.value_of("PATH").expect("Path should not be NONE");
-        if path.ends_with(".em") {
+       
             let data = fs::read_to_string(&path).unwrap_or_else(|e| {
                 panic!("Couldn't read file {}: {}", path, e);
             });
@@ -90,11 +90,8 @@ fn main() {
                 gem::run(data, &args, debug);
             }
             return;
-        } else {
-            println!("Not a valid .em file!");
-            return;
-        }
     }
+
 
     if let Some(sub) = matches.subcommand_matches("examples") {
         let path = if let Some(tmp) = sub.value_of("PATH") {
