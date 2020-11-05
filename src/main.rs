@@ -3,6 +3,7 @@ mod beryl;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
+use std::process::{Command, Stdio};
 
 // use clap::{App, Arg, SubCommand};
 
@@ -17,11 +18,13 @@ fn main() {
     (author: "Emerald <@Emerald#6666>")
     (about: "Runs emerald script programs and other helpful stuff")
     (@arg debug: -d --debug "Display debugging information")
+
     (@subcommand examples =>
         (about: "Generates some example files")
         (@arg PATH: "Where to generate the files, defaults to current directory"))
     (@subcommand run =>
         (about: "Run an emerald script program")
+        (@arg gem_path: --gem-path "Path to the gem you want to use")
         (@arg PATH: +required "Path of file to run")
         (@arg ARGS: ... +use_delimiter "Arguments to pass to the script"))
     )
@@ -40,7 +43,52 @@ fn main() {
             }else {
                 "".to_string()
             };
-            gem::run(data, &args, debug);
+
+            //check if the environment variable is set
+            let command = 
+            if let Some(p) = sub.value_of("gem_path"){
+                String::from(p)
+            } else if let Ok(g) = env::var("GEM_BIN"){
+               g
+            } else{
+                String::from("gem-bin")
+            };
+
+            let mut cmd = Command::new(command);
+            cmd.stdin(Stdio::inherit());
+            if debug{
+                cmd
+                    .arg("-d")
+                    .arg(&path);
+            }else {
+                cmd.arg(&path);
+            }
+
+            if debug {
+                println!("Trying command {:?}", cmd);
+            }
+            if let Ok(mut r) = cmd.spawn(){
+                let code = loop {
+                    //wait until the child process exits
+                    if let Ok(ex) = r.try_wait(){
+                        if let None = ex{
+                            continue;
+                        }else if let Some(stat)  = ex{
+                            break stat;
+                        }
+                    }
+                };
+                //log command exit code here
+                if debug {
+                    println!("Gem exited with code {}", code);
+                }
+            } else { 
+                //if the other options fail run with the built in version
+                if debug {
+                    println!("Can't find gem installed on the system, using built in gem version {}", gem::version());
+                }
+                gem::run(data, &args, debug);
+            }
             return;
         } else {
             println!("Not a valid .em file!");

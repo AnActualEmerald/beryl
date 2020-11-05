@@ -198,6 +198,7 @@ checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 [[package]]
 name = "gem"
 version = "0.0.5"
+source = "git+https://github.com/AnActualEmerald/EmeraldScript.git#8e1b198c8394512c4c85bf8ce703368832e444cc"
 dependencies = [
  "clap",
  "console",

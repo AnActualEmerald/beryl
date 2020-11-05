@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gem = {path = "../EmeraldScript"}
+gem = {git = "https://github.com/AnActualEmerald/EmeraldScript.git"} #being able to pull it from github is pretty based ngl
 clap = "2.33.0"
 rustyline = "6.3.0"
 directories = "3.0.1"

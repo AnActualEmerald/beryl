@@ -1,3 +1,4 @@
-fn main() {
-  print "Hello, World!";
+fn main(args) {
+  name = readln("Enter your name: ");
+  println("Hello, " + name);
 }
