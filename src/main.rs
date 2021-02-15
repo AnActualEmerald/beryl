@@ -39,7 +39,7 @@ fn main() {
                 panic!("Couldn't read file {}: {}", path, e);
             });
             let args = if let Some(tmp) = sub.values_of("ARGS"){
-                tmp.map(|e| format!("\"{}\"", e)).collect::<Vec<String>>().join(",")
+                tmp.map(|e| format!("{}", e)).collect::<Vec<String>>().join(",")
             }else {
                 "".to_string()
             };
@@ -60,9 +60,12 @@ fn main() {
                 cmd
                     .arg("-d")
                     .arg(&path);
+
             }else {
                 cmd.arg(&path);
             }
+
+            cmd.arg(&args);
 
             if debug {
                 println!("Trying command {:?}", cmd);
