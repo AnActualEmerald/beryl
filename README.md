@@ -1,2 +1,2 @@
 # beryl
-CLI for [EmeraldScript](https://github.com/AnActualEmerald/EmeraldScript/)
+CLI for [BerylScript](https://github.com/AnActualEmerald/BerylScript/)
