@@ -4,5 +4,4 @@ Available commands are:
     "example [num]" => Displays a runnable example
     "clear"         => Clears the screen
 
-To run an EmeraldScript file, leave Beryl then use "gem run [file_path]"
-or do "gem help" for more info 
+To run an BerylScript file, rerun beryl with a path provided

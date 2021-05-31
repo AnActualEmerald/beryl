@@ -1,0 +1,4 @@
+//The simplest BerylScript file you can have. 
+fn main(args) {
+	println("Hello world!"); 
+}

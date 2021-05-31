@@ -17,14 +17,14 @@ fn main() {
     (name: "Beryl")
     (version: env!("CARGO_PKG_VERSION"))
     (author: "Emerald <@Emerald#6666>")
-    (about: "Runs emerald script programs and other helpful stuff")
+    (about: "Runs BerylScript programs and other helpful stuff")
     (@arg debug: -d --debug "Display debugging information")
 
     (@subcommand examples =>
         (about: "Generates some example files")
         (@arg PATH: "Where to generate the files, defaults to current directory"))
 
-    (@arg bin_path: --gem-path "Path to the gem you want to use")
+    (@arg bin_path: --bin "Path to the BerylScript bin you want to use")
     (@arg PATH: "Path of file to run")
     (@arg ARGS: ... +use_delimiter "Arguments to pass to the script"))
     .get_matches();
@@ -101,20 +101,23 @@ fn main() {
         return;
     } else {
         let mut input: String = String::new();
-        {
-            let stdin = io::stdin();
-            for lines in stdin.lock().lines() {
-                let line = lines.expect("Couldn't read from stdin");
-                input.push_str(&line);
-            }
-        }
-        if input.len() > 0 {
+        // {
+        //     let stdin = io::stdin();
+        //     let mut stdin = stdin.lock();
+        //     let buf = stdin.fill_buf().unwrap();
+        //     input = std::str::from_utf8(buf).unwrap().to_string();
+        //     let len = buf.len();
+        //     stdin.consume(len);
+        // }
+        // println!("{:?}", input);
+        if input == "".to_string() {
+            let mut b = beryl::Repl::new(debug);
+            b.run();
+        } else {
             beryl_lib::run(input, &vec![""], false);
             return;
         }
 
-        let mut b = beryl::Repl::new(debug);
-        b.run();
         // repl(debug).expect("REPL encountered an issue: ");
     }
 }
@@ -123,10 +126,10 @@ fn main() {
 fn create_examples(path: &PathBuf) {
     //big fan of this macro, makes it easy to include files in the binary
     let examples = [
-        include_str!("examples/example1.em"),
-        include_str!("examples/example2.em"),
-        include_str!("examples/example3.em"),
-        include_str!("examples/example4.em"),
+        include_str!("examples/example1.brl"),
+        include_str!("examples/example2.brl"),
+        include_str!("examples/example3.brl"),
+        include_str!("examples/example4.brl"),
         // include_str!("examples/example4.em"),
     ];
 
@@ -141,7 +144,7 @@ fn create_examples(path: &PathBuf) {
 
     let mut count = 1;
     for ex in examples.iter() {
-        let expath = path.join(format!("example{}.em", count));
+        let expath = path.join(format!("example{}.brl", count));
         fs::write(&expath, ex).unwrap_or_else(|_| {
             println!("Error generating example file {}", expath.display());
         });

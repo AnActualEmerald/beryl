@@ -188,7 +188,7 @@ impl Repl {
     fn execute(&mut self, data: &str) {
         let ast = parse(data.to_string());
         match repl_run(*ast, &mut self.runtime, &mut self.glob_frame) {
-            Ok(v) => println!("\nout: {}", v),
+            Ok(_) => {} //println!("\nout: {}", v),
             Err(e) => println!("{}", e),
         }
         println!("");
