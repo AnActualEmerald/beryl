@@ -1,7 +1,6 @@
+use beryl_lib::{parse, repl_run, Runtime, StackFrame};
 use console::Term;
 use directories::ProjectDirs;
-use gem::interpreter::*;
-use gem::{lexer, parser};
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
 use std::path::PathBuf;
@@ -17,7 +16,7 @@ pub struct Repl {
 impl Repl {
     pub fn new(debug: bool) -> Self {
         let mut cache = PathBuf::from(
-            ProjectDirs::from("", "EmeraldScript", "Beryl")
+            ProjectDirs::from("", "BerylScript", "Beryl")
                 .expect("Unable to find cache directory")
                 .cache_dir(),
         );
@@ -46,12 +45,12 @@ impl Repl {
         }
 
         println!(
-            "Welcome to Beryl, the interactive EmeraldScript interpreter v{}!\nGem version {}",
+            "Welcome to Beryl, the interactive BerylScript interpreter v{}!\nBerylScript version {}",
             env!("CARGO_PKG_VERSION"),
-            gem::version()
+            beryl_lib::version()
         );
         println!("Type exit or stop to leave, or help for more info\n");
-        let mut prompt = "<== ".to_owned();
+        let mut prompt = "==> ".to_owned();
         let mut data = String::new();
         loop {
             let input = rl.readline(&prompt);
@@ -66,9 +65,9 @@ impl Repl {
                             let buf = Term::stdout();
                             buf.clear_screen().expect("Unable to clear console");
 
-                            println!(
-                                "Welcome to Beryl, the interactive EmeraldScript interpreter v{}!",
-                                env!("CARGO_PKG_VERSION")
+                            println!("Welcome to Beryl, the interactive BerylScript interpreter v{}!\nBerylScript version {}",
+                            env!("CARGO_PKG_VERSION"),
+                            beryl_lib::version()
                             );
                             println!("Type exit or stop to leave, or help for more info\n");
                         }
@@ -115,7 +114,7 @@ impl Repl {
                                 rl.add_history_entry(line);
                                 continue;
                             } else {
-                                prompt = "<== ".to_owned();
+                                prompt = "==> ".to_owned();
                             }
 
                             self.execute(&data);
@@ -187,24 +186,11 @@ impl Repl {
     }
 
     fn execute(&mut self, data: &str) {
-        let tokens = lexer::run(&data);
-
-        if self.debug {
-            println!("Generated tokens: {:?}", tokens);
-        }
-        match parser::parse(tokens) {
-            Ok(ast) => {
-                if self.debug {
-                    println!("Generated AST: {:?}", ast);
-                }
-
-                match repl_run(ast, &mut self.runtime, &mut self.glob_frame) {
-                    Ok(v) => println!("\nout: {}", v),
-                    Err(e) => println!("{}", e),
-                }
-                println!("");
-            }
+        let ast = parse(data.to_string());
+        match repl_run(*ast, &mut self.runtime, &mut self.glob_frame) {
+            Ok(v) => println!("\nout: {}", v),
             Err(e) => println!("{}", e),
         }
+        println!("");
     }
 }

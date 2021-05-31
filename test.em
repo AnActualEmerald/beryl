@@ -1,4 +1,4 @@
 fn main(args) {
-  name = readln("Enter your name: ");
+  name = readln("What is your name: ");
   println("Hello, " + name);
 }
